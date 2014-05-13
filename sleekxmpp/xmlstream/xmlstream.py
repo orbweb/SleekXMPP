@@ -1468,13 +1468,20 @@ class XMLStream(object):
                     # Only process the stream while connected to the server
                     if not self.state.ensure('connected', wait=0.1):
                         break
+                    log.info('self.state is connected')
                     # Ensure the stream header is sent for any
                     # new connections.
                     if not self.session_started_event.is_set():
+                        log.info('self.session_started_event not set')
+                        log.info('Sending stream header')
                         self.send_raw(self.stream_header, now=True)
+                        log.info('Stream header sent')
+                    log.info('self.session_started_event is set')
                     if not self.__read_xml():
+                        log.info('Server terminated the stream, end processing')
                         # If the server terminated the stream, end processing
                         break
+                    log.info('XML done reading')
             except KeyboardInterrupt:
                 log.debug("Keyboard Escape Detected in _process")
                 self.event('killed', direct=True)
