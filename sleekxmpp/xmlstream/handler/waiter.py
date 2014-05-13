@@ -64,6 +64,7 @@ class Waiter(BaseHandler):
         """
         if timeout is None:
             timeout = self.stream().response_timeout
+            log.info("XMPStream.response_timeout: %s" % timeout)
 
         elapsed_time = 0
         stanza = False
@@ -74,7 +75,7 @@ class Waiter(BaseHandler):
             except QueueEmpty:
                 elapsed_time += 1
                 if elapsed_time >= timeout:
-                    log.warning("Timed out waiting for %s", self.name)
+                    log.warning("Timed out (>= %s) waiting for %s", (timeout, self.name))
         self.stream().remove_handler(self.name)
         return stanza
 
