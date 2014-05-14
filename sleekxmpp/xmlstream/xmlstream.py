@@ -1615,6 +1615,8 @@ class XMLStream(object):
         # Apply any preprocessing filters.
         xml = self.incoming_filter(xml)
 
+        log.info("__spawn_event: building stanza")
+
         # Convert the raw XML object into a stanza object. If no registered
         # stanza type applies, a generic StanzaBase stanza will be used.
         stanza = self._build_stanza(xml)
@@ -1623,9 +1625,10 @@ class XMLStream(object):
             if stanza is not None:
                 stanza = filter(stanza)
         if stanza is None:
+            log.info("__spawn_event: stanza is None")
             return
 
-        log.debug("RECV: %s", stanza)
+        log.info("__spawn_event: RECV %s", stanza)
 
         # Match the stanza against registered handlers. Handlers marked
         # to run "in stream" will be executed immediately; the rest will
@@ -1638,18 +1641,27 @@ class XMLStream(object):
             else:
                 stanza_copy = stanza
             handler.prerun(stanza_copy)
+            log.info("__spawn_event: putting to event queue")
             self.event_queue.put(('stanza', handler, stanza_copy))
+            log.info("__spawn_event: event queue end putting")
             try:
+                log.info("__spawn_event: checking delete")
                 if handler.check_delete():
+                    log.info("__spawn_event: deleting handler")
                     self.__handlers.remove(handler)
+                    log.info("__spawn_event: deleted handler")
             except:
                 pass  # not thread safe
             unhandled = False
 
+        log.info('__spawn_event: done handlers')
+
         # Some stanzas require responses, such as Iq queries. A default
         # handler will be executed immediately for this case.
         if unhandled:
+            log.info('__spawn_event: unhandled start')
             stanza.unhandled()
+            log.info('__spawn_event: unhandled end')
 
     def _threaded_event_wrapper(self, func, args):
         """Capture exceptions for event handlers that run
