@@ -694,8 +694,10 @@ class XMLStream(object):
         # Wait for the send queue to empty.
         if wait is not None:
             if wait:
+                log.info('Joining send queue')
                 self.send_queue.join()
         elif self.disconnect_wait:
+            log.info('Joining send queue 2')
             self.send_queue.join()
 
         # Clearing this event will pause the send loop.
@@ -705,6 +707,7 @@ class XMLStream(object):
 
         # Send the end of stream marker.
         if send_close:
+            log.info('Sending raw: %s' % self.stream_footer)
             self.send_raw(self.stream_footer, now=True)
 
         # Wait for confirmation that the stream was
