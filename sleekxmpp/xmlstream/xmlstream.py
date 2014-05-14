@@ -1466,6 +1466,7 @@ class XMLStream(object):
         if reconnections are allowed.
         """
 
+        log.info('Loop start')
         # The body of this loop will only execute once per connection.
         # Additional passes will be made only if an error occurs and
         # reconnecting is permitted.
@@ -1476,6 +1477,7 @@ class XMLStream(object):
                 # the body of the loop from running until a disconnect
                 # occurs. After any reconnection, the stream header will
                 # be resent and processing will resume.
+                log.info('Checking self.stop')
                 while not self.stop.is_set():
                     log.info('Ensuring state is connected')
                     # Only process the stream while connected to the server
@@ -1806,7 +1808,8 @@ class XMLStream(object):
 
         :param exception: An unhandled exception object.
         """
-        pass
+        log.error(repr(exception))
+        #pass
 
 
 # To comply with PEP8, method names now use underscores.
