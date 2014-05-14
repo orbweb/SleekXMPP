@@ -196,17 +196,21 @@ class StateMachine(object):
         # avoid an operation occurring in the wrong state.
         # TODO another option would be an ensure_ctx that uses a semaphore to allow
         # threads to indicate they want to remain in a particular state.
+        log.info('Ensuring: acquiring lock')
         self.lock.acquire()
         start = time.time()
         while not self.__current_state in states:
             # detect timeout:
             remainder = start + wait - time.time()
             if remainder > 0:
+                log.info('Ensuring: Waiting lock' % wait)
                 self.lock.wait(remainder)
             else:
+                log.info('Ensuring: timed out (>= %s) when waiting lock' % wait)
                 self.lock.release()
                 return False
         self.lock.release()
+        log.info('Ensuring: released lock')
         return True
 
     def reset(self):

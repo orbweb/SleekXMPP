@@ -1468,8 +1468,10 @@ class XMLStream(object):
                 # occurs. After any reconnection, the stream header will
                 # be resent and processing will resume.
                 while not self.stop.is_set():
+                    log.info('Ensuring state is connected')
                     # Only process the stream while connected to the server
                     if not self.state.ensure('connected', wait=0.1):
+                        log.info('State is not connected')
                         break
                     log.info('self.state is connected')
                     # Ensure the stream header is sent for any
