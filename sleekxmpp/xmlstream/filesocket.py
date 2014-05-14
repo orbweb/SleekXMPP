@@ -15,6 +15,9 @@
 from socket import _fileobject
 import errno
 import socket
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class FileSocket(_fileobject):
@@ -32,13 +35,19 @@ class FileSocket(_fileobject):
             return None
         while True:
             try:
+                log.info('FileSocket receiving data')
                 data = self._sock.recv(size)
+                log.info('FileSocket received data')
                 break
             except socket.error as serr:
+                log.info('FileSocket error %r' % serr)
                 if serr.errno != errno.EINTR:
                     raise
         if data is not None:
+            log.info('FileSocket data is not None')
             return data
+
+        log.info('FileSocket data is None')
 
 
 class Socket26(socket.socket):
