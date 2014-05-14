@@ -68,7 +68,7 @@ SSL_RETRY_DELAY = 0.5
 SSL_RETRY_MAX = 10
 
 #: Maximum time to delay between connection attempts is one hour.
-RECONNECT_MAX_DELAY = 600
+RECONNECT_MAX_DELAY = 10
 
 #: Maximum number of attempts to connect to the server before quitting
 #: and raising a 'connect_failed' event. Setting this to ``None`` will
