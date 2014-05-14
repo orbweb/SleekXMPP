@@ -752,7 +752,7 @@ class XMLStream(object):
 
     def reconnect(self, reattempt=True, wait=False, send_close=True):
         """Reset the stream's state and reconnect to the server."""
-        log.debug("reconnecting...")
+        log.info("reconnecting...")
         if self.state.ensure('connected'):
             self.state.transition('connected', 'disconnected',
                     wait=2.0,
@@ -761,7 +761,7 @@ class XMLStream(object):
 
         attempts = self.reconnect_max_attempts
 
-        log.debug("connecting...")
+        log.info("connecting...")
         connected = self.state.transition('disconnected', 'connected',
                                           wait=2.0,
                                           func=self._connect,
