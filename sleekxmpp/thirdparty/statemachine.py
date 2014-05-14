@@ -74,7 +74,7 @@ class StateMachine(object):
         '''
         Transition from any of the given `from_states` to the given `to_state`.
         '''
-
+        log.info('Trasitting %s -> %s' % (str(from_states), to_state))
         if not isinstance(from_states, (tuple, list, set)):
             raise ValueError("from_states should be a list, tuple, or set")
 
@@ -91,8 +91,10 @@ class StateMachine(object):
         while not self.lock.acquire(False):
             time.sleep(.001)
             if (start + wait - time.time()) <= 0.0:
-                log.debug("==== Could not acquire lock in %s sec: %s -> %s ", wait, self.__current_state, to_state)
+                log.info("==== Could not acquire lock in %s sec: %s -> %s ", wait, self.__current_state, to_state)
                 return False
+
+        log.info('Lock acquired 1')
 
         while not self.__current_state in from_states:
             # detect timeout:
@@ -100,9 +102,11 @@ class StateMachine(object):
             if remainder > 0:
                 self.lock.wait(remainder)
             else:
-                log.debug("State was not ready")
+                log.info("State was not ready")
                 self.lock.release()
                 return False
+
+        log.info('Lock acquired 2')
 
         try: # lock is acquired; all other threads will return false or wait until notify/timeout
             if self.__current_state in from_states: # should always be True due to lock
@@ -115,7 +119,7 @@ class StateMachine(object):
                 if not return_val:
                     return return_val
 
-                log.debug(' ==== TRANSITION %s -> %s', self.__current_state, to_state)
+                log.info(' ==== TRANSITION %s -> %s', self.__current_state, to_state)
                 self._set_state(to_state)
                 return return_val  # some 'true' value returned by func or True if func was None
             else:
