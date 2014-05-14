@@ -752,6 +752,15 @@ class XMLStream(object):
 
     def reconnect(self, reattempt=True, wait=False, send_close=True):
         """Reset the stream's state and reconnect to the server."""
+        import inspect
+
+        log.info('===reconnecting frame stack===')
+        for frame in inspect.stack():
+            if len(frame) > 3:
+                log.info(frame[3])
+            else:
+                log.info(str(frame))
+
         log.info("reconnecting...")
         if self.state.ensure('connected'):
             self.state.transition('connected', 'disconnected',
