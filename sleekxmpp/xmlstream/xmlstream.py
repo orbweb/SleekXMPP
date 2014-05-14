@@ -1538,11 +1538,12 @@ class XMLStream(object):
         depth = 0
         root = None
         for event, xml in ET.iterparse(self.filesocket, (b'end', b'start')):
+            log.info('__read_xml: %s' % event)
             if event == b'start':
                 if depth == 0:
                     # We have received the start of the root element.
                     root = xml
-                    log.debug('RECV: %s', tostring(root, xmlns=self.default_ns,
+                    log.info('RECV: %s', tostring(root, xmlns=self.default_ns,
                                                          stream=self,
                                                          top_level=True,
                                                          open_only=True))
@@ -1560,10 +1561,11 @@ class XMLStream(object):
                 if depth == 0:
                     # The stream's root element has closed,
                     # terminating the stream.
-                    log.debug("End of stream recieved")
+                    log.info("End of stream recieved")
                     self.stream_end_event.set()
                     return False
                 elif depth == 1:
+                    log.info("End of stream recieved 1")
                     # We only raise events for stanzas that are direct
                     # children of the root element.
                     try:
@@ -1574,7 +1576,7 @@ class XMLStream(object):
                         # Keep the root element empty of children to
                         # save on memory use.
                         root.clear()
-        log.debug("Ending read XML loop")
+        log.info("Ending read XML loop")
 
     def _build_stanza(self, xml, default_ns=None):
         """Create a stanza object from a given XML object.
