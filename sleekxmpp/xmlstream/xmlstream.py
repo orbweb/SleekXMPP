@@ -1549,8 +1549,11 @@ class XMLStream(object):
                                                          open_only=True))
                     # Perform any stream initialization actions, such
                     # as handshakes.
+                    log.info("Clearing stream end event")
                     self.stream_end_event.clear()
+                    log.info("Starting stream handler")
                     self.start_stream_handler(root)
+                    log.info("Started stream handler")
 
                     # We have a successful stream connection, so reset
                     # exponential backoff for new reconnect attempts.
@@ -1563,6 +1566,7 @@ class XMLStream(object):
                     # terminating the stream.
                     log.info("End of stream recieved")
                     self.stream_end_event.set()
+                    log.info("End of stream event set")
                     return False
                 elif depth == 1:
                     log.info("End of stream recieved 1")
@@ -1570,12 +1574,16 @@ class XMLStream(object):
                     # children of the root element.
                     try:
                         self.__spawn_event(xml)
+                        log.info('spawn event end')
                     except RestartStream:
+                        log.info('except RestartStream, return true')
                         return True
                     if root is not None:
+                        log.info('root is not None')
                         # Keep the root element empty of children to
                         # save on memory use.
                         root.clear()
+                        log.info('root is cleared')
         log.info("Ending read XML loop")
 
     def _build_stanza(self, xml, default_ns=None):
